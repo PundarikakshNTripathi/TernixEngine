@@ -38,6 +38,7 @@ FetchContent_MakeAvailable(pybind11)
 
 add_library(ternix_core STATIC
     src/mul_mat_ternary.cpp
+    src/cuda_kernels.cu
 )
 target_include_directories(ternix_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(ternix_core PUBLIC OpenMP::OpenMP_CXX)
