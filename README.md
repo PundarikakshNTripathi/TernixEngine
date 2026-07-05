@@ -90,8 +90,8 @@ The build pipeline requires MSVC Build Tools on Windows (for native CUDA integra
 
 1. Install Python prerequisites: `pip install cmake ninja pandas matplotlib`.
 2. Configure the build matrix and execute the pipeline:
-   ```powershell
-   .\run_all.ps1
+   ```cmd
+   run_all.bat
    ```
 This script automates CMake generation, compilation, unit testing, microbenchmarking, and graph visualization. Please refer to `.antigravity/tech.md` for private host setup guidelines.
 
