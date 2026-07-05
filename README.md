@@ -17,8 +17,13 @@ TernixEngine is a bare-metal, dependency-free C++20 and CUDA inference execution
 7. [DevOps & Testing](#7-devops--testing)
 8. [Environment Setup & Execution](#8-environment-setup--execution)
 9. [Empirical Benchmarks & Evaluation](#9-empirical-benchmarks--evaluation)
-10. [Limitations & Future Work](#10-limitations--future-work)
-11. [Troubleshooting](#11-troubleshooting)
+10. [Current Project Status](#10-current-project-status)
+11. [Limitations & Future Work](#11-limitations--future-work)
+12. [Troubleshooting](#12-troubleshooting)
+13. [License](#13-license)
+14. [Project Referencing Guide](#14-project-referencing-guide)
+15. [Support & Maintenance](#15-support--maintenance)
+16. [Contribution Policy](#16-contribution-policy)
 
 ## 1. The Bottleneck: De-Quantization Wall & Warp Divergence
 Conventional inference engines evaluating sub-byte quantized Large Language Models (LLMs) suffer from severe memory and architectural bottlenecks:
@@ -154,13 +159,27 @@ Based on our empirical microbenchmarking on a 512x512 matrix execution:
 
 The data confirms that the structural alignment of the SIMD integer accumulations with proper weight interleaving yields over an order of magnitude improvement by eliminating the scalar control-flow hazard entirely.
 
-## 10. Limitations & Future Work
+## 10. Current Project Status
+As of the current milestone, the project is **not yet a fully functional end-to-end inference engine**. Instead, it is a highly optimized, verified mathematical kernel library with scaffolding for an engine.
+
+### Accomplishments:
+- **Core Math Kernel**: We have successfully written, benchmarked, and verified the 1.58-bit ternary matrix multiplication kernel (`src/mul_mat_ternary.cpp`). It flawlessly uses AVX2 intrinsics (`_mm256_srlv_epi32`, `_mm256_sign_epi32`) to achieve branchless, float-less accumulation.
+- **Microbenchmarking**: The pipeline is highly robust, utilizing Google Benchmark to dynamically measure latency and graph the speedups (currently achieving an ~8.2x speedup over scalar branching).
+- **Python Interoperability**: PyBind11 is configured and successfully compiles `ternix_engine.pyd` for python integrations.
+- **Repository Structure**: The CMake matrix, testing suite (GTest), GitHub Actions (stub), and documentation are completely production-ready.
+
+### What is Missing / Incomplete:
+- **Weight Quantization (`quantize.py`)**: This is completely empty (a structural stub). It does not load HuggingFace models, does not apply BitNet scaling, and does not pack into our 2-bit interleaved layout yet.
+- **Model Architecture (`model.cpp`)**: The model loader is a stub. It hardcodes dimensions (32000, 4096, 32) and allocates empty memory. It does not execute a full forward pass (Attention + FFN).
+- **CUDA Kernels**: The GPU warp-reduction kernels exist structurally but require deeper validation to ensure they match the theoretical throughput of the MARLIN paper.
+
+## 11. Limitations & Future Work
 Based on our analysis of the codebase and literature:
 1. **Lookup Table (LUT) Integration**: While QuIP# and T-MAC recommend E8-lattice codebooks for cache-resident LUT operations, our current iteration hardcodes the ternary arithmetic. Future work requires generating a 1KiB LUT to process groups of weights natively.
 2. **AVX-512 VNNI**: The current architecture uses AVX2 for maximum hardware compatibility. Implementing `_mm512_dpbusd_epi32` (AVX-512) will theoretically double throughput on Sapphire Rapids and Zen 4 architectures.
 3. **End-to-End Latency Tracing**: The `bench_end_to_end.cpp` file is currently a structural stub. It must be expanded to track actual token-generation latency (Tokens/sec) rather than isolated matrix multiplications.
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 - **`nvcc` is not recognized**: If you installed the CUDA Toolkit but the terminal cannot find `nvcc`, you must add the CUDA binary path (e.g., `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin`) to your Windows system `PATH` environment variable. Additionally, ensure you completely restart your terminal or IDE so it inherits the updated PATH.
 - **Nsight VSE Installation Warnings**: When installing newer CUDA toolkits (e.g., 13.x) with newer Visual Studio versions (e.g., VS 2026), the installer may warn that it could not install the "Nsight Visual Studio Edition" plugin for an older VS version like 2022. This is completely harmless. Nsight is just a debugging UI plugin; its absence does not affect the core `nvcc` compiler or your ability to build and run CUDA code.
 - **`run_all.ps1` opens in Notepad**: We strictly utilize `.bat` files for the execution pipeline now because the MSVC x64 Native Tools terminal is built on `cmd.exe`. Do not use `.ps1` scripts for the pipeline.
@@ -169,7 +188,7 @@ Based on our analysis of the codebase and literature:
 - **C2719 Error (MSVC)**: Ensure all `__m256i` arguments are passed by reference or pointer, as MSVC prohibits passing aligned types by value in older configurations.
 - **CUDA PTX Errors**: Verify that your NVIDIA Studio Driver matches the CUDA Toolkit version. Game Ready drivers may cause unexpected PTX instruction failures during `cp.async`.
 
-## 12. License
+## 13. License
 This project is distributed under the **Elastic License 2.0**.
 
 What this means:
@@ -180,7 +199,7 @@ What this means:
 
 See `LICENSE` for the full legal text. This software is provided as-is without any warranties.
 
-## 13. Project Referencing Guide
+## 14. Project Referencing Guide
 If you utilize TernixEngine in your academic research or production environment, please use the following citation format:
 
 ```bibtex
@@ -192,8 +211,8 @@ If you utilize TernixEngine in your academic research or production environment,
 }
 ```
 
-## 14. Support & Maintenance
+## 15. Support & Maintenance
 For bug reports, feature requests, or performance optimization discussions, please open an issue in the repository. Please provide your `CMakeCache.txt` and hardware specifications when reporting performance deviations.
 
-## 15. Contribution Policy
-We welcome contributions under the Elastic License 2.0. Please ensure all new kernels include corresponding unit tests in the `tests/` directory and update the `README.md` if adding new CLI flags or features.
+## 16. Contribution Policy
+We welcome contributions under the Elastic License 2.0. Please refer to `CONTRIBUTING.md` for guidelines on workflow, standards, and issue reporting. Please ensure all new kernels include corresponding unit tests in the `tests/` directory and update the `README.md` if adding new CLI flags or features.
