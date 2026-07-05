@@ -39,6 +39,11 @@ FetchContent_MakeAvailable(pybind11)
 add_library(ternix_core STATIC
     src/mul_mat_ternary.cpp
     src/cuda_kernels.cu
+    src/tensor.cpp
+    src/simd_math.cpp
+    src/bitpack.cpp
+    src/model.cpp
+    src/transformer.cpp
 )
 target_include_directories(ternix_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(ternix_core PUBLIC OpenMP::OpenMP_CXX)
@@ -49,11 +54,27 @@ elseif(MSVC)
     target_compile_options(ternix_core PRIVATE /arch:AVX2 /O2)
 endif()
 
+add_executable(ternix_cli src/main.cpp)
+target_link_libraries(ternix_cli PRIVATE ternix_core)
+
+# Tests
+enable_testing()
+add_executable(ternix_tests tests/test_bitpack.cpp tests/test_simd_math.cpp)
+target_link_libraries(ternix_tests PRIVATE ternix_core gtest_main)
+add_test(NAME CoreTests COMMAND ternix_tests)
+
 # Benchmarks
 add_executable(bench_simd_math benchmarks/bench_simd_math.cpp)
 target_link_libraries(bench_simd_math PRIVATE ternix_core benchmark::benchmark benchmark::benchmark_main)
+add_executable(bench_end_to_end benchmarks/bench_end_to_end.cpp)
+target_link_libraries(bench_end_to_end PRIVATE ternix_core benchmark::benchmark benchmark::benchmark_main)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(bench_simd_math PRIVATE -mavx2 -O3)
+    target_compile_options(bench_end_to_end PRIVATE -mavx2 -O3)
+    target_compile_options(ternix_cli PRIVATE -mavx2 -O3)
 elseif(MSVC)
     target_compile_options(bench_simd_math PRIVATE /arch:AVX2 /O2)
+    target_compile_options(bench_end_to_end PRIVATE /arch:AVX2 /O2)
+    target_compile_options(ternix_cli PRIVATE /arch:AVX2 /O2)
 endif()
