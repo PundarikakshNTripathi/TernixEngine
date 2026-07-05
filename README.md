@@ -1,5 +1,6 @@
 # TernixEngine
 **1.58-bit SIMD-Native Inference Engine**
+*Disclaimer: This project is distributed under the Elastic License 2.0. Please see the [License](#12-license) section for more details.*
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue) ![CUDA](https://img.shields.io/badge/CUDA-12.x-green) ![AVX2](https://img.shields.io/badge/SIMD-AVX2-orange) ![Python](https://img.shields.io/badge/Python-PyBind11-yellow)
 
@@ -167,3 +168,32 @@ Based on our analysis of the codebase and literature:
 - **NVCC Fatal Error (Multiple Input Files)**: If `nvcc` fails with input file errors, ensure you are using CMake Generator Expressions (`$<$<COMPILE_LANGUAGE:CXX>:/O2>`) in `CMakeLists.txt` for all optimization flags. Otherwise, CMake will pass C++ flags like `/arch:AVX2` directly to `nvcc`, which will parse them as corrupted input files.
 - **C2719 Error (MSVC)**: Ensure all `__m256i` arguments are passed by reference or pointer, as MSVC prohibits passing aligned types by value in older configurations.
 - **CUDA PTX Errors**: Verify that your NVIDIA Studio Driver matches the CUDA Toolkit version. Game Ready drivers may cause unexpected PTX instruction failures during `cp.async`.
+
+## 12. License
+This project is distributed under the **Elastic License 2.0**.
+
+What this means:
+- **[Yes]** You can view, use, and modify this code for your own internal use
+- **[Yes]** You can share this project with attribution
+- **[No]** You cannot provide the software to third parties as a hosted or managed service
+- **[No]** You cannot circumvent the licensing limitations
+
+See `LICENSE` for the full legal text. This software is provided as-is without any warranties.
+
+## 13. Project Referencing Guide
+If you utilize TernixEngine in your academic research or production environment, please use the following citation format:
+
+```bibtex
+@software{ternix_engine_2026,
+  author = {TernixEngine Contributors},
+  title = {TernixEngine: Hyper-Optimized 1.58-bit Inference Engine},
+  year = {2026},
+  url = {https://github.com/PundarikakshNTripathi/TernixEngine}
+}
+```
+
+## 14. Support & Maintenance
+For bug reports, feature requests, or performance optimization discussions, please open an issue in the repository. Please provide your `CMakeCache.txt` and hardware specifications when reporting performance deviations.
+
+## 15. Contribution Policy
+We welcome contributions under the Elastic License 2.0. Please ensure all new kernels include corresponding unit tests in the `tests/` directory and update the `README.md` if adding new CLI flags or features.

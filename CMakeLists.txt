@@ -94,3 +94,13 @@ elseif(MSVC)
     target_compile_options(bench_end_to_end PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2> $<$<COMPILE_LANGUAGE:CXX>:/O2>)
     target_compile_options(ternix_cli PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2> $<$<COMPILE_LANGUAGE:CXX>:/O2>)
 endif()
+
+# Python Bindings
+pybind11_add_module(ternix_engine bindings/python/pybind11_wrapper.cpp)
+target_link_libraries(ternix_engine PRIVATE ternix_core)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ternix_engine PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2> $<$<COMPILE_LANGUAGE:CXX>:-O3>)
+elseif(MSVC)
+    target_compile_options(ternix_engine PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2> $<$<COMPILE_LANGUAGE:CXX>:/O2>)
+endif()
