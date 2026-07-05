@@ -1,6 +1,6 @@
 {
   "context": {
-    "date": "2026-07-05T09:49:10+05:30",
+    "date": "2026-07-05T10:01:09+05:30",
     "host_name": "PUNDARIKAKSH",
     "executable": ".\\build\\bench_end_to_end.exe",
     "num_cpus": 24,
@@ -32,7 +32,7 @@
       }
     ],
     "load_avg": [],
-    "library_build_type": "debug"
+    "library_build_type": "release"
   },
   "benchmarks": [
     {
@@ -45,8 +45,8 @@
       "repetition_index": 0,
       "threads": 1,
       "iterations": 1000000000,
-      "real_time": 2.2598320012912155e-07,
-      "cpu_time": 2.3437500000000001e-07,
+      "real_time": 1.0011717677116394e-13,
+      "cpu_time": 0.0000000000000000e+00,
       "time_unit": "ms"
     }
   ]

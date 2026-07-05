@@ -36,10 +36,10 @@ echo.
 echo [4/4] Executing Microbenchmarks ^& Graphing...
 if not exist benchmarks\ mkdir benchmarks
 
-.\build\bench_simd_math.exe --benchmark_format=csv --benchmark_out=benchmarks\results.csv
-.\build\bench_end_to_end.exe --benchmark_format=csv --benchmark_out=benchmarks\results_e2e.csv
+.\build\bench_simd_math.exe --benchmark_format=json --benchmark_out=benchmarks\results.json
+.\build\bench_end_to_end.exe --benchmark_format=json --benchmark_out=benchmarks\results_e2e.json
 
-python scripts\plot_results.py --input benchmarks\results.csv --output benchmarks
+python scripts\plot_results.py --input benchmarks\results.json --output benchmarks
 
 echo.
 echo Pipeline Execution Successful. Artifacts generated in /benchmarks.

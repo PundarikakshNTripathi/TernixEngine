@@ -1,10 +1,10 @@
-Start testing: Jul 05 09:49 India Standard Time
+Start testing: Jul 05 10:01 India Standard Time
 ----------------------------------------------------------
 1/1 Testing: CoreTests
 1/1 Test: CoreTests
 Command: "C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build/ternix_tests.exe"
 Directory: C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build
-"CoreTests" start time: Jul 05 09:49 India Standard Time
+"CoreTests" start time: Jul 05 10:01 India Standard Time
 Output:
 ----------------------------------------------------------
 Running main() from C:\PROFESSIONAL\Development\AI-HPC\TernixEngine\build\_deps\googletest-src\googletest\src\gtest_main.cc
@@ -26,11 +26,11 @@ Running main() from C:\PROFESSIONAL\Development\AI-HPC\TernixEngine\build\_deps\
 [==========] 3 tests from 2 test suites ran. (0 ms total)
 [  PASSED  ] 3 tests.
 <end of output>
-Test time =   0.54 sec
+Test time =   0.45 sec
 ----------------------------------------------------------
 Test Passed.
-"CoreTests" end time: Jul 05 09:49 India Standard Time
+"CoreTests" end time: Jul 05 10:01 India Standard Time
 "CoreTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Jul 05 09:49 India Standard Time
+End testing: Jul 05 10:01 India Standard Time

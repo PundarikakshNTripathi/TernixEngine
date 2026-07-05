@@ -96,7 +96,7 @@ The build pipeline requires MSVC Build Tools on Windows (for native CUDA integra
 This script automates CMake generation, compilation, unit testing, microbenchmarking, and graph visualization. Please refer to `.antigravity/tech.md` for private host setup guidelines.
 
 ## 9. Empirical Benchmarks & Evaluation
-Benchmarks are tracked using the Google Benchmark framework, which outputs statistical traces directly to `benchmarks/results.csv`. The `scripts/plot_results.py` script visualizes this data programmatically.
+Benchmarks are tracked using the Google Benchmark framework, which outputs statistical traces directly to `benchmarks/results.json`. The `scripts/plot_results.py` script visualizes this data programmatically and **dynamically injects the realtime hardware metrics directly into the table below**!
 
 ![Benchmark Results](benchmarks/benchmark_results.png)
 
@@ -119,6 +119,8 @@ Based on our analysis of the codebase and literature:
 ## 11. Troubleshooting
 - **`nvcc` is not recognized**: If you installed the CUDA Toolkit but the terminal cannot find `nvcc`, you must add the CUDA binary path (e.g., `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin`) to your Windows system `PATH` environment variable. Additionally, ensure you completely restart your terminal or IDE so it inherits the updated PATH.
 - **Nsight VSE Installation Warnings**: When installing newer CUDA toolkits (e.g., 13.x) with newer Visual Studio versions (e.g., VS 2026), the installer may warn that it could not install the "Nsight Visual Studio Edition" plugin for an older VS version like 2022. This is completely harmless. Nsight is just a debugging UI plugin; its absence does not affect the core `nvcc` compiler or your ability to build and run CUDA code.
-- **CMake cannot find compiler**: Ensure you are running from the *x64 Native Tools Command Prompt*, not standard PowerShell.
+- **`run_all.ps1` opens in Notepad**: We strictly utilize `.bat` files for the execution pipeline now because the MSVC x64 Native Tools terminal is built on `cmd.exe`. Do not use `.ps1` scripts for the pipeline.
+- **CMake cannot find compiler or CUDA**: Ensure you are running from the *x64 Native Tools Command Prompt*, not standard PowerShell. If it still fails, your `build/CMakeCache.txt` may be stale. Our `run_all.bat` automatically deletes this cache to prevent CMake staleness.
+- **NVCC Fatal Error (Multiple Input Files)**: If `nvcc` fails with input file errors, ensure you are using CMake Generator Expressions (`$<$<COMPILE_LANGUAGE:CXX>:/O2>`) in `CMakeLists.txt` for all optimization flags. Otherwise, CMake will pass C++ flags like `/arch:AVX2` directly to `nvcc`, which will parse them as corrupted input files.
 - **C2719 Error (MSVC)**: Ensure all `__m256i` arguments are passed by reference or pointer, as MSVC prohibits passing aligned types by value in older configurations.
 - **CUDA PTX Errors**: Verify that your NVIDIA Studio Driver matches the CUDA Toolkit version. Game Ready drivers may cause unexpected PTX instruction failures during `cp.async`.

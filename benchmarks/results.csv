@@ -1,6 +1,6 @@
 {
   "context": {
-    "date": "2026-07-05T09:49:08+05:30",
+    "date": "2026-07-05T10:01:07+05:30",
     "host_name": "PUNDARIKAKSH",
     "executable": ".\\build\\bench_simd_math.exe",
     "num_cpus": 24,
@@ -32,7 +32,7 @@
       }
     ],
     "load_avg": [],
-    "library_build_type": "debug"
+    "library_build_type": "release"
   },
   "benchmarks": [
     {
@@ -45,7 +45,7 @@
       "repetition_index": 0,
       "threads": 1,
       "iterations": 6,
-      "real_time": 1.1777323333080858e+02,
+      "real_time": 1.1887226665082078e+02,
       "cpu_time": 1.1718750000000000e+02,
       "time_unit": "ms"
     },
@@ -58,9 +58,9 @@
       "repetitions": 1,
       "repetition_index": 0,
       "threads": 1,
-      "iterations": 50,
-      "real_time": 1.4922368000261486e+01,
-      "cpu_time": 1.5000000000000000e+01,
+      "iterations": 45,
+      "real_time": 1.5013833333634668e+01,
+      "cpu_time": 1.4930555555555555e+01,
       "time_unit": "ms"
     }
   ]
