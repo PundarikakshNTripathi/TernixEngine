@@ -117,6 +117,8 @@ Based on our analysis of the codebase and literature:
 3. **End-to-End Latency Tracing**: The `bench_end_to_end.cpp` file is currently a structural stub. It must be expanded to track actual token-generation latency (Tokens/sec) rather than isolated matrix multiplications.
 
 ## 11. Troubleshooting
-- **CMake cannot find compiler**: Ensure you are running from the *x64 Native Tools Command Prompt for VS 2022*, not standard PowerShell.
+- **`nvcc` is not recognized**: If you installed the CUDA Toolkit but the terminal cannot find `nvcc`, you must add the CUDA binary path (e.g., `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin`) to your Windows system `PATH` environment variable. Additionally, ensure you completely restart your terminal or IDE so it inherits the updated PATH.
+- **Nsight VSE Installation Warnings**: When installing newer CUDA toolkits (e.g., 13.x) with newer Visual Studio versions (e.g., VS 2026), the installer may warn that it could not install the "Nsight Visual Studio Edition" plugin for an older VS version like 2022. This is completely harmless. Nsight is just a debugging UI plugin; its absence does not affect the core `nvcc` compiler or your ability to build and run CUDA code.
+- **CMake cannot find compiler**: Ensure you are running from the *x64 Native Tools Command Prompt*, not standard PowerShell.
 - **C2719 Error (MSVC)**: Ensure all `__m256i` arguments are passed by reference or pointer, as MSVC prohibits passing aligned types by value in older configurations.
 - **CUDA PTX Errors**: Verify that your NVIDIA Studio Driver matches the CUDA Toolkit version. Game Ready drivers may cause unexpected PTX instruction failures during `cp.async`.
