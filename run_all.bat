@@ -4,8 +4,13 @@ setlocal
 echo === TernixEngine Dev Pipeline ===
 
 echo.
+echo [0/4] Installing Python Dependencies...
+python -m pip install pandas matplotlib
+
+echo.
 echo [1/4] Configuring CMake...
-cmake -B build -G Ninja
+if exist build\CMakeCache.txt del /F /Q build\CMakeCache.txt
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 if %ERRORLEVEL% neq 0 (
     echo CMake config failed
     exit /b %ERRORLEVEL%

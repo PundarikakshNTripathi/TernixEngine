@@ -1,3 +1,67 @@
-name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message
-BM_NaiveTernary,5,162.34,162.01,ms,,,,,
-BM_AVX2Ternary,500,2.15,2.12,ms,,,,,
+{
+  "context": {
+    "date": "2026-07-05T09:49:08+05:30",
+    "host_name": "PUNDARIKAKSH",
+    "executable": ".\\build\\bench_simd_math.exe",
+    "num_cpus": 24,
+    "mhz_per_cpu": 2419,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 49152,
+        "num_sharing": 2
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 2097152,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 31457280,
+        "num_sharing": 24
+      }
+    ],
+    "load_avg": [],
+    "library_build_type": "debug"
+  },
+  "benchmarks": [
+    {
+      "name": "BM_NaiveTernary",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_NaiveTernary",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 6,
+      "real_time": 1.1777323333080858e+02,
+      "cpu_time": 1.1718750000000000e+02,
+      "time_unit": "ms"
+    },
+    {
+      "name": "BM_AVX2Ternary",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_AVX2Ternary",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 50,
+      "real_time": 1.4922368000261486e+01,
+      "cpu_time": 1.5000000000000000e+01,
+      "time_unit": "ms"
+    }
+  ]
+}
