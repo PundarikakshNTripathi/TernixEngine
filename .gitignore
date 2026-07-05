@@ -1,1 +1,32 @@
-.antigravity
+# CMake / Build
+build/
+bin/
+lib/
+out/
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+Makefile
+
+# IDEs
+.vs/
+.vscode/
+*.swp
+*.suo
+*.user
+
+# Python
+__pycache__/
+*.pyc
+
+# Private Local AI Workspaces / Documentation
+.antigravity/
+architecture.md
+tech.md
+MEMORY.md
+INSTRUCTIONS.md
+
+# Dynamic Benchmark Data
+benchmarks/*.json
+benchmarks/*.csv
+# Note: benchmarks/benchmark_results.png is tracked!

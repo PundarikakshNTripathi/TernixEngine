@@ -63,13 +63,38 @@ The system initializes via a Python wrapper or C++ CLI. The `Model` struct parse
 ## 5. Directory Structure
 ```text
 TernixEngine/
-├── CMakeLists.txt                 # Master build configuration
-├── benchmarks/                    # Google Benchmark suite (exports to CSV)
-├── bindings/python/               # Pybind11 wrapper and setup
-├── include/ternix/                # Core C++/CUDA headers
-├── scripts/                       # Quantization and plotting scripts
-├── src/                           # Backend kernel implementations
-└── tests/                         # GoogleTest unit coverage
+├── benchmarks/              # Google Benchmark integration and Python graphing scripts
+│   ├── bench_end_to_end.cpp # Full pipeline inference benchmarks
+│   ├── bench_simd_math.cpp  # Microbenchmarks for scalar vs AVX2 ternary ops
+│   ├── results.json         # (Gitignored) Raw latency output from benchmarks
+│   └── benchmark_results.png# Auto-generated visualization of CPU times
+├── bindings/                # Interoperability layers
+│   └── python/
+│       └── pybind11_wrapper.cpp # Exposes C++ models to Python via Pybind11
+├── include/
+│   └── ternix/              # Public API Headers
+│       ├── bitpack.h        # 1.58-bit ternary quantization logic
+│       ├── model.h          # Model architectures and layers
+│       ├── simd_math.h      # Declarations for SIMD and baseline math
+│       ├── tensor.h         # Multi-dimensional tensor management
+│       └── transformer.h    # Transformer execution blocks
+├── scripts/
+│   └── plot_results.py      # Automates matplotlib graphing and README injection
+├── src/                     # Core Implementation
+│   ├── bitpack.cpp          # Bitwise packing implementations
+│   ├── cuda_kernels.cu      # GPU acceleration (Warp-level reductions)
+│   ├── main.cpp             # CLI entrypoint
+│   ├── model.cpp            # Model abstractions
+│   ├── mul_mat_ternary.cpp  # Core SIMD (AVX2) ternary multiplication logic
+│   ├── simd_math.cpp        # Wrappers for math algorithms
+│   ├── tensor.cpp           # Tensor memory allocation
+│   └── transformer.cpp      # Layer processing and attention mechanisms
+├── tests/                   # GoogleTest unit testing suite
+│   ├── test_bitpack.cpp     # Validates packing/unpacking accuracy
+│   └── test_simd_math.cpp   # Validates SIMD math against scalar truth
+├── CMakeLists.txt           # Build matrix config (C++20, FetchContent, CUDA)
+├── README.md                # Project documentation
+└── run_all.bat              # Universal CI/CD execution pipeline script
 ```
 
 ## 6. Technology Stack
@@ -86,10 +111,26 @@ Unit tests are implemented using GoogleTest, located in the `tests/` directory. 
 Execute tests via `ctest --output-on-failure` within the build directory.
 
 ## 8. Environment Setup & Execution
-The build pipeline requires MSVC Build Tools on Windows (for native CUDA integration).
 
-1. Install Python prerequisites: `pip install cmake ninja pandas matplotlib`.
-2. Configure the build matrix and execute the pipeline:
+### System Requirements
+**Hardware:**
+- **CPU**: x86-64 Processor with AVX2 instruction set support (Intel Haswell / AMD Zen or newer).
+- **GPU (Optional)**: NVIDIA GPU with Compute Capability 7.5+ (Turing architecture or newer) for CUDA acceleration.
+- **RAM**: Minimum 16GB (32GB+ recommended for large matrices).
+
+**Software:**
+- **OS**: Windows 10/11 (Linux support is theoretically possible via CMake, but `run_all.bat` is Windows-native).
+- **C++ Compiler**: MSVC (Visual Studio 2022/2026 Build Tools) - Must support C++20.
+- **CUDA Toolkit (Optional)**: v12.x or v13.x for GPU offloading (`nvcc` must be in PATH).
+- **Python**: 3.8+ (for plotting and pybind11 integration).
+- **Build Tools**: CMake (3.20+) and Ninja.
+- **Git**: Required for CMake `FetchContent` to download Google Benchmark, GoogleTest, and Pybind11.
+
+### Automated Pipeline
+We provide a unified batch script that handles dependencies, cache clearing, compiling, testing, benchmarking, and graphing seamlessly.
+
+1. Ensure you have opened the **x64 Native Tools Command Prompt for VS** (do not use standard PowerShell).
+2. Execute the pipeline:
    ```cmd
    run_all.bat
    ```
@@ -98,14 +139,16 @@ This script automates CMake generation, compilation, unit testing, microbenchmar
 ## 9. Empirical Benchmarks & Evaluation
 Benchmarks are tracked using the Google Benchmark framework, which outputs statistical traces directly to `benchmarks/results.json`. The `scripts/plot_results.py` script visualizes this data programmatically and **dynamically injects the realtime hardware metrics directly into the table below**!
 
+*Hardware Testbed: Intel(R) Core(TM) i7-14650HX CPU | NVIDIA GeForce RTX 5060 Laptop GPU | 512x512 FP16/INT2 Matrix Execution*
+
 ![Benchmark Results](benchmarks/benchmark_results.png)
 
 Based on our empirical microbenchmarking on a 512x512 matrix execution:
 
 | Implementation Strategy | Loop Constraints | Instruction Set | Throughput Speedup (Actual) | Time (ms) |
 | :--- | :--- | :--- | :--- | :--- |
-| Naive Scalar | Branching `if (w == 0)` | Base C++ | 1.0x (Baseline) | 162.01 ms |
-| Tiled SIMD Accumulation | Tiled `M -> K -> N` | AVX2 (`_mm256_srlv_epi32`) | ~76.4x | 2.12 ms |
+| Naive Scalar | Branching `if (w == 0)` | Base C++ | 1.0x (Baseline) | 122.40 ms |
+| Tiled SIMD Accumulation | Tiled `M -> K -> N` | AVX2 (`_mm256_srlv_epi32`) | ~8.2x | 15.00 ms |
 | Asynchronous CUDA Warp | `32x32` Shared Mem | NVCC (`__shfl_down_sync`) | Pending GPU Profile | N/A |
 
 The data confirms that the structural alignment of the SIMD integer accumulations with proper weight interleaving yields over an order of magnitude improvement by eliminating the scalar control-flow hazard entirely.
