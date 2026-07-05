@@ -7,7 +7,7 @@
 
 # =============================================================================
 # Project: TernixEngine
-# Configurations: 
+# Configurations: Release
 # =============================================================================
 # =============================================================================
 
@@ -18,9 +18,19 @@ msvc_deps_prefix = Note: including file:
 
 
 #############################################
+# Rule for compiling CUDA files.
+
+rule CUDA_COMPILER__ternix_core_unscanned_Release
+  depfile = $DEP_FILE
+  deps = gcc
+  command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\NVIDIA~2\CUDA\v13.3\bin\nvcc.exe -forward-unknown-to-host-compiler $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -x cu -c $in -o $out -Xcompiler=-Fd$TARGET_COMPILE_PDB,-FS
+  description = Building CUDA object $out
+
+
+#############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__ternix_core_
+rule CXX_SCAN__ternix_core_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -29,7 +39,7 @@ rule CXX_SCAN__ternix_core_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__ternix_core_
+rule CXX_DYNDEP__ternix_core_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=CMakeFiles\ternix_core.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -40,7 +50,7 @@ rule CXX_DYNDEP__ternix_core_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_core_scanned_
+rule CXX_COMPILER__ternix_core_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -49,7 +59,7 @@ rule CXX_COMPILER__ternix_core_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_core_unscanned_
+rule CXX_COMPILER__ternix_core_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -58,7 +68,7 @@ rule CXX_COMPILER__ternix_core_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__ternix_core_
+rule CXX_STATIC_LIBRARY_LINKER__ternix_core_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -67,7 +77,7 @@ rule CXX_STATIC_LIBRARY_LINKER__ternix_core_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__ternix_cli_
+rule CXX_SCAN__ternix_cli_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -76,7 +86,7 @@ rule CXX_SCAN__ternix_cli_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__ternix_cli_
+rule CXX_DYNDEP__ternix_cli_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=CMakeFiles\ternix_cli.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -87,7 +97,7 @@ rule CXX_DYNDEP__ternix_cli_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_cli_scanned_
+rule CXX_COMPILER__ternix_cli_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -96,7 +106,7 @@ rule CXX_COMPILER__ternix_cli_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_cli_unscanned_
+rule CXX_COMPILER__ternix_cli_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -105,7 +115,7 @@ rule CXX_COMPILER__ternix_cli_unscanned_
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__ternix_cli_
+rule CXX_EXECUTABLE_LINKER__ternix_cli_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E vs_link_exe --msvc-ver=1951 --intdir=$OBJECT_DIR --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\mt.exe --manifests $MANIFESTS -- C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\link.exe /nologo $in  /out:$TARGET_FILE /implib:$TARGET_IMPLIB /pdb:$TARGET_PDB /version:0.0 $LINK_FLAGS $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -114,7 +124,7 @@ rule CXX_EXECUTABLE_LINKER__ternix_cli_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__ternix_tests_
+rule CXX_SCAN__ternix_tests_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -123,7 +133,7 @@ rule CXX_SCAN__ternix_tests_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__ternix_tests_
+rule CXX_DYNDEP__ternix_tests_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=CMakeFiles\ternix_tests.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -134,7 +144,7 @@ rule CXX_DYNDEP__ternix_tests_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_tests_scanned_
+rule CXX_COMPILER__ternix_tests_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -143,7 +153,7 @@ rule CXX_COMPILER__ternix_tests_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__ternix_tests_unscanned_
+rule CXX_COMPILER__ternix_tests_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -152,7 +162,7 @@ rule CXX_COMPILER__ternix_tests_unscanned_
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__ternix_tests_
+rule CXX_EXECUTABLE_LINKER__ternix_tests_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E vs_link_exe --msvc-ver=1951 --intdir=$OBJECT_DIR --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\mt.exe --manifests $MANIFESTS -- C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\link.exe /nologo $in  /out:$TARGET_FILE /implib:$TARGET_IMPLIB /pdb:$TARGET_PDB /version:0.0 $LINK_FLAGS $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -161,7 +171,7 @@ rule CXX_EXECUTABLE_LINKER__ternix_tests_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__bench_simd_math_
+rule CXX_SCAN__bench_simd_math_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -170,7 +180,7 @@ rule CXX_SCAN__bench_simd_math_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__bench_simd_math_
+rule CXX_DYNDEP__bench_simd_math_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=CMakeFiles\bench_simd_math.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -181,7 +191,7 @@ rule CXX_DYNDEP__bench_simd_math_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__bench_simd_math_scanned_
+rule CXX_COMPILER__bench_simd_math_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -190,7 +200,7 @@ rule CXX_COMPILER__bench_simd_math_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__bench_simd_math_unscanned_
+rule CXX_COMPILER__bench_simd_math_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -199,7 +209,7 @@ rule CXX_COMPILER__bench_simd_math_unscanned_
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__bench_simd_math_
+rule CXX_EXECUTABLE_LINKER__bench_simd_math_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E vs_link_exe --msvc-ver=1951 --intdir=$OBJECT_DIR --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\mt.exe --manifests $MANIFESTS -- C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\link.exe /nologo $in  /out:$TARGET_FILE /implib:$TARGET_IMPLIB /pdb:$TARGET_PDB /version:0.0 $LINK_FLAGS $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -208,7 +218,7 @@ rule CXX_EXECUTABLE_LINKER__bench_simd_math_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__bench_end_to_end_
+rule CXX_SCAN__bench_end_to_end_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -217,7 +227,7 @@ rule CXX_SCAN__bench_end_to_end_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__bench_end_to_end_
+rule CXX_DYNDEP__bench_end_to_end_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=CMakeFiles\bench_end_to_end.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -228,7 +238,7 @@ rule CXX_DYNDEP__bench_end_to_end_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__bench_end_to_end_scanned_
+rule CXX_COMPILER__bench_end_to_end_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -237,7 +247,7 @@ rule CXX_COMPILER__bench_end_to_end_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__bench_end_to_end_unscanned_
+rule CXX_COMPILER__bench_end_to_end_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -246,7 +256,7 @@ rule CXX_COMPILER__bench_end_to_end_unscanned_
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__bench_end_to_end_
+rule CXX_EXECUTABLE_LINKER__bench_end_to_end_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E vs_link_exe --msvc-ver=1951 --intdir=$OBJECT_DIR --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100261~1.0\x64\mt.exe --manifests $MANIFESTS -- C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\link.exe /nologo $in  /out:$TARGET_FILE /implib:$TARGET_IMPLIB /pdb:$TARGET_PDB /version:0.0 $LINK_FLAGS $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -263,7 +273,7 @@ rule CUSTOM_COMMAND
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__benchmark_unscanned_
+rule CXX_COMPILER__benchmark_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -272,7 +282,7 @@ rule CXX_COMPILER__benchmark_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__benchmark_
+rule CXX_STATIC_LIBRARY_LINKER__benchmark_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -281,7 +291,7 @@ rule CXX_STATIC_LIBRARY_LINKER__benchmark_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__benchmark_main_unscanned_
+rule CXX_COMPILER__benchmark_main_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -290,7 +300,7 @@ rule CXX_COMPILER__benchmark_main_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__benchmark_main_
+rule CXX_STATIC_LIBRARY_LINKER__benchmark_main_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -299,7 +309,7 @@ rule CXX_STATIC_LIBRARY_LINKER__benchmark_main_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__gmock_
+rule CXX_SCAN__gmock_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -308,7 +318,7 @@ rule CXX_SCAN__gmock_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__gmock_
+rule CXX_DYNDEP__gmock_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=_deps\googletest-build\googlemock\CMakeFiles\gmock.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -319,7 +329,7 @@ rule CXX_DYNDEP__gmock_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gmock_scanned_
+rule CXX_COMPILER__gmock_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -328,7 +338,7 @@ rule CXX_COMPILER__gmock_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gmock_unscanned_
+rule CXX_COMPILER__gmock_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -337,7 +347,7 @@ rule CXX_COMPILER__gmock_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__gmock_
+rule CXX_STATIC_LIBRARY_LINKER__gmock_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -346,7 +356,7 @@ rule CXX_STATIC_LIBRARY_LINKER__gmock_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__gmock_main_
+rule CXX_SCAN__gmock_main_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -355,7 +365,7 @@ rule CXX_SCAN__gmock_main_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__gmock_main_
+rule CXX_DYNDEP__gmock_main_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=_deps\googletest-build\googlemock\CMakeFiles\gmock_main.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -366,7 +376,7 @@ rule CXX_DYNDEP__gmock_main_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gmock_main_scanned_
+rule CXX_COMPILER__gmock_main_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -375,7 +385,7 @@ rule CXX_COMPILER__gmock_main_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gmock_main_unscanned_
+rule CXX_COMPILER__gmock_main_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -384,7 +394,7 @@ rule CXX_COMPILER__gmock_main_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__gmock_main_
+rule CXX_STATIC_LIBRARY_LINKER__gmock_main_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -393,7 +403,7 @@ rule CXX_STATIC_LIBRARY_LINKER__gmock_main_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__gtest_
+rule CXX_SCAN__gtest_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -402,7 +412,7 @@ rule CXX_SCAN__gtest_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__gtest_
+rule CXX_DYNDEP__gtest_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=_deps\googletest-build\googletest\CMakeFiles\gtest.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -413,7 +423,7 @@ rule CXX_DYNDEP__gtest_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gtest_scanned_
+rule CXX_COMPILER__gtest_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -422,7 +432,7 @@ rule CXX_COMPILER__gtest_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gtest_unscanned_
+rule CXX_COMPILER__gtest_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -431,7 +441,7 @@ rule CXX_COMPILER__gtest_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__gtest_
+rule CXX_STATIC_LIBRARY_LINKER__gtest_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -440,7 +450,7 @@ rule CXX_STATIC_LIBRARY_LINKER__gtest_
 #############################################
 # Rule for generating CXX dependencies.
 
-rule CXX_SCAN__gtest_main_
+rule CXX_SCAN__gtest_main_Release
   deps = msvc
   command = C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe $DEFINES $INCLUDES $FLAGS $in -nologo -TP -showIncludes -scanDependencies $DYNDEP_INTERMEDIATE_FILE -Fo$OBJ_FILE
   description = Scanning $in for CXX dependencies
@@ -449,7 +459,7 @@ rule CXX_SCAN__gtest_main_
 #############################################
 # Rule to generate ninja dyndep files for CXX.
 
-rule CXX_DYNDEP__gtest_main_
+rule CXX_DYNDEP__gtest_main_Release
   command = C:\Users\pndnt\anaconda3\Lib\site-packages\cmake\data\bin\cmake.exe -E cmake_ninja_dyndep --tdi=_deps\googletest-build\googletest\CMakeFiles\gtest_main.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
@@ -460,7 +470,7 @@ rule CXX_DYNDEP__gtest_main_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gtest_main_scanned_
+rule CXX_COMPILER__gtest_main_scanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes @$DYNDEP_MODULE_MAP_FILE /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -469,7 +479,7 @@ rule CXX_COMPILER__gtest_main_scanned_
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__gtest_main_unscanned_
+rule CXX_COMPILER__gtest_main_unscanned_Release
   deps = msvc
   command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
   description = Building CXX object $out
@@ -478,7 +488,7 @@ rule CXX_COMPILER__gtest_main_unscanned_
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__gtest_main_
+rule CXX_STATIC_LIBRARY_LINKER__gtest_main_Release
   command = C:\windows\system32\cmd.exe /C "$PRE_LINK && C:\PROGRA~1\MICROS~4\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT

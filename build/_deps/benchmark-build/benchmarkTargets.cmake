@@ -62,18 +62,18 @@ set_target_properties(benchmark::benchmark_main PROPERTIES
   INTERFACE_LINK_LIBRARIES "benchmark::benchmark"
 )
 
-# Import target "benchmark::benchmark" for configuration ""
-set_property(TARGET benchmark::benchmark APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+# Import target "benchmark::benchmark" for configuration "Release"
+set_property(TARGET benchmark::benchmark APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(benchmark::benchmark PROPERTIES
-  IMPORTED_LINK_INTERFACE_LANGUAGES_NOCONFIG "CXX"
-  IMPORTED_LOCATION_NOCONFIG "C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build/_deps/benchmark-build/src/benchmark.lib"
+  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
+  IMPORTED_LOCATION_RELEASE "C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build/_deps/benchmark-build/src/benchmark.lib"
   )
 
-# Import target "benchmark::benchmark_main" for configuration ""
-set_property(TARGET benchmark::benchmark_main APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+# Import target "benchmark::benchmark_main" for configuration "Release"
+set_property(TARGET benchmark::benchmark_main APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(benchmark::benchmark_main PROPERTIES
-  IMPORTED_LINK_INTERFACE_LANGUAGES_NOCONFIG "CXX"
-  IMPORTED_LOCATION_NOCONFIG "C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build/_deps/benchmark-build/src/benchmark_main.lib"
+  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
+  IMPORTED_LOCATION_RELEASE "C:/PROFESSIONAL/Development/AI-HPC/TernixEngine/build/_deps/benchmark-build/src/benchmark_main.lib"
   )
 
 # This file does not depend on other imported targets which have
