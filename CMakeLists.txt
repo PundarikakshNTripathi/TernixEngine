@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
-project(TernixEngine LANGUAGES CXX CUDA)
+project(TernixEngine LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD 20)
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+    set(CMAKE_CUDA_STANDARD 20)
+    set(TERNIX_HAS_CUDA ON)
+    message(STATUS "CUDA compiler found. Enabling GPU support.")
+else()
+    set(TERNIX_HAS_CUDA OFF)
+    message(WARNING "CUDA compiler NOT found. Building CPU-only (AVX2) version.")
+endif()
 
 find_package(OpenMP REQUIRED)
 
@@ -36,15 +47,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-add_library(ternix_core STATIC
+set(TERNIX_SOURCES 
     src/mul_mat_ternary.cpp
-    src/cuda_kernels.cu
     src/tensor.cpp
     src/simd_math.cpp
     src/bitpack.cpp
     src/model.cpp
     src/transformer.cpp
 )
+
+if(TERNIX_HAS_CUDA)
+    list(APPEND TERNIX_SOURCES src/cuda_kernels.cu)
+endif()
+
+add_library(ternix_core STATIC ${TERNIX_SOURCES})
 target_include_directories(ternix_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(ternix_core PUBLIC OpenMP::OpenMP_CXX)
 

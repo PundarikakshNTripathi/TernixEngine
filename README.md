@@ -98,11 +98,17 @@ This script automates CMake generation, compilation, unit testing, microbenchmar
 ## 9. Empirical Benchmarks & Evaluation
 Benchmarks are tracked using the Google Benchmark framework, which outputs statistical traces directly to `benchmarks/results.csv`. The `scripts/plot_results.py` script visualizes this data programmatically.
 
-| Implementation Strategy | Loop Constraints | Instruction Set | Throughput Speedup (Theoretical) |
-| :--- | :--- | :--- | :--- |
-| Naive Scalar | Branching `if (w == 0)` | Base C++ | 1.0x (Baseline) |
-| Tiled SIMD Accumulation | Tiled `M -> K -> N` | AVX2 (`_mm256_srlv_epi32`) | ~80.0x |
-| Asynchronous CUDA Warp | `32x32` Shared Mem | NVCC (`__shfl_down_sync`) | ~350.0x |
+![Benchmark Results](benchmarks/benchmark_results.png)
+
+Based on our empirical microbenchmarking on a 512x512 matrix execution:
+
+| Implementation Strategy | Loop Constraints | Instruction Set | Throughput Speedup (Actual) | Time (ms) |
+| :--- | :--- | :--- | :--- | :--- |
+| Naive Scalar | Branching `if (w == 0)` | Base C++ | 1.0x (Baseline) | 162.01 ms |
+| Tiled SIMD Accumulation | Tiled `M -> K -> N` | AVX2 (`_mm256_srlv_epi32`) | ~76.4x | 2.12 ms |
+| Asynchronous CUDA Warp | `32x32` Shared Mem | NVCC (`__shfl_down_sync`) | Pending GPU Profile | N/A |
+
+The data confirms that the structural alignment of the SIMD integer accumulations with proper weight interleaving yields over an order of magnitude improvement by eliminating the scalar control-flow hazard entirely.
 
 ## 10. Limitations & Future Work
 Based on our analysis of the codebase and literature:

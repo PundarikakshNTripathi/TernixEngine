@@ -16,9 +16,9 @@ std::vector<int8_t> generate_activations(size_t size) {
 }
 
 static void BM_NaiveTernary(benchmark::State& state) {
-    const size_t M = 4096;
-    const size_t K = 4096;
-    const size_t N = 4096;
+    const size_t M = 512;
+    const size_t K = 512;
+    const size_t N = 512;
     
     int8_t* A = static_cast<int8_t*>(_mm_malloc(M * K * sizeof(int8_t), 32));
     uint8_t* B = static_cast<uint8_t*>(_mm_malloc((K / 4) * N * sizeof(uint8_t), 32));
@@ -36,9 +36,9 @@ static void BM_NaiveTernary(benchmark::State& state) {
 BENCHMARK(BM_NaiveTernary)->Unit(benchmark::kMillisecond);
 
 static void BM_AVX2Ternary(benchmark::State& state) {
-    const size_t M = 4096;
-    const size_t K = 4096;
-    const size_t N = 4096;
+    const size_t M = 512;
+    const size_t K = 512;
+    const size_t N = 512;
     
     int8_t* A = static_cast<int8_t*>(_mm_malloc(M * K * sizeof(int8_t), 32));
     uint8_t* B = static_cast<uint8_t*>(_mm_malloc((K / 4) * N * sizeof(uint8_t), 32));
