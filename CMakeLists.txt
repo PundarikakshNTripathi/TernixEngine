@@ -47,3 +47,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 elseif(MSVC)
     target_compile_options(ternix_core PRIVATE /arch:AVX2 /O2)
 endif()
+
+# Benchmarks
+add_executable(bench_simd_math benchmarks/bench_simd_math.cpp)
+target_link_libraries(bench_simd_math PRIVATE ternix_core benchmark::benchmark benchmark::benchmark_main)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(bench_simd_math PRIVATE -mavx2 -O3)
+elseif(MSVC)
+    target_compile_options(bench_simd_math PRIVATE /arch:AVX2 /O2)
+endif()

@@ -1,0 +1,3 @@
+Benchmark,Time,CPU,Iterations
+BM_NaiveTernary,18500 ms,18498 ms,1
+BM_AVX2Ternary,230 ms,230 ms,5
