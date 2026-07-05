@@ -5,7 +5,7 @@
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue) ![CUDA](https://img.shields.io/badge/CUDA-12.x-green) ![AVX2](https://img.shields.io/badge/SIMD-AVX2-orange) ![Python](https://img.shields.io/badge/Python-PyBind11-yellow)
 
 ## Abstract
-TernixEngine is a bare-metal, dependency-free C++20 and CUDA inference execution engine optimized exclusively for 1.58-bit ternary Vision-Language Models. By completely bypassing floating-point matrix multiplications (FP16/FP32), the engine utilizes AVX2 SIMD integer operations and CUDA shared-memory warp tiling to achieve hardware-level roofline saturation. The architecture resolves the de-quantization wall by utilizing in-register weight unpacking and branchless compute operations.
+TernixEngine is a bare-metal, dependency-free C++20 and CUDA inference execution engine optimized exclusively for 1.58-bit ternary Large Language Models (LLMs). By completely bypassing floating-point matrix multiplications (FP16/FP32), the engine utilizes AVX2 SIMD integer operations and CUDA shared-memory warp tiling to achieve hardware-level roofline saturation. The architecture resolves the de-quantization wall by utilizing in-register weight unpacking and branchless compute operations.
 
 ## Table of Contents
 1. [The Bottleneck: De-Quantization Wall & Warp Divergence](#1-the-bottleneck-de-quantization-wall--warp-divergence)
