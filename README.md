@@ -1,22 +1,116 @@
-# TernixEngine: A SIMD-Native and Shared-Memory Architecture for 1.58-bit Vision-Language Model Inference
+# TernixEngine
+**1.58-bit SIMD-Native Inference Engine**
+
+![C++20](https://img.shields.io/badge/C%2B%2B-20-blue) ![CUDA](https://img.shields.io/badge/CUDA-12.x-green) ![AVX2](https://img.shields.io/badge/SIMD-AVX2-orange) ![Python](https://img.shields.io/badge/Python-PyBind11-yellow)
 
 ## Abstract
-TernixEngine is a highly specialized, production-grade inference engine engineered exclusively for 1.58-bit ternary Vision-Language Models. The system entirely bypasses floating-point matrix multiplications during the core inference loops, utilizing Advanced Vector Extensions 2 (AVX2) for CPU execution and strict 2D shared-memory tiling for CUDA execution. The resulting architecture eliminates intermediate expansion operations and saturates hardware-level compute and memory rooflines.
+TernixEngine is a bare-metal, dependency-free C++20 and CUDA inference execution engine optimized exclusively for 1.58-bit ternary Vision-Language Models. By completely bypassing floating-point matrix multiplications (FP16/FP32), the engine utilizes AVX2 SIMD integer operations and CUDA shared-memory warp tiling to achieve hardware-level roofline saturation. The architecture resolves the de-quantization wall by utilizing in-register weight unpacking and branchless compute operations.
 
-## Architectural Bottlenecks Addressed
-1. **The De-Quantization Wall:** Conventional implementations extract highly compressed weights (e.g., 2-bit packed) into 8-bit integers prior to execution within the Generalized Matrix Multiplication (GEMM) core. This intermediate unpacking saturates L1 cache bandwidth, stalling the arithmetic logic units. TernixEngine unpacks the 2-bit weights directly inside 256-bit SIMD registers to avoid L1 saturation.
-2. **Sparse Branch Misprediction:** Structural sparsity within ternary matrices often invites conditional branching to skip redundant computations. This practice disrupts CPU branch prediction pipelines, leading to significant stall penalties. The engine leverages bitwise mapping via arithmetic shifts to enforce strict branchless masking operations.
-3. **CUDA Thread Divergence:** Sub-byte element extraction conventionally causes unaligned global memory fetches and warp divergence. TernixEngine employs `cp.async` for direct Global-to-Shared memory streaming and utilizes XOR-based swizzling strategies to eliminate shared memory bank conflicts.
+## Table of Contents
+1. [The Bottleneck: De-Quantization Wall & Warp Divergence](#1-the-bottleneck-de-quantization-wall--warp-divergence)
+2. [Architectural Methodology](#2-architectural-methodology)
+3. [Conceptual Overview](#3-conceptual-overview)
+4. [System Architecture](#4-system-architecture)
+5. [Directory Structure](#5-directory-structure)
+6. [Technology Stack](#6-technology-stack)
+7. [DevOps & Testing](#7-devops--testing)
+8. [Environment Setup & Execution](#8-environment-setup--execution)
+9. [Empirical Benchmarks & Evaluation](#9-empirical-benchmarks--evaluation)
+10. [Limitations & Future Work](#10-limitations--future-work)
+11. [Troubleshooting](#11-troubleshooting)
 
-## Hardware Execution Strategies
-### CPU AVX2 SIMD Kernel
-The CPU architecture operates entirely within 256-bit SIMD registers. It loads 8-bit activations and 2-bit packed weights in 32-byte chunks. Instead of explicit casting, the kernel relies on `_mm256_srlv_epi32` to concurrently unpack multiple weights. The resulting binary patterns are transformed into scalar signs via logical and arithmetic shifts (`_mm256_srai_epi32`). The `_mm256_sign_epi32` instruction applies these signs to the activations, effectively multiplying by -1, 0, or 1 without utilizing floating-point or integer multiplication hardware blocks. Accumulation is performed via `_mm256_add_epi32`.
+## 1. The Bottleneck: De-Quantization Wall & Warp Divergence
+Conventional inference engines evaluating sub-byte quantized Large Language Models (LLMs) suffer from severe memory and architectural bottlenecks:
+1. **The De-Quantization Wall**: Current implementations unpack 2-bit weights into INT8 or FP16 arrays before entering the General Matrix Multiply (GEMM) loop. This read-modify-compute pattern saturates L1 cache bandwidth, stalling the arithmetic logic unit (ALU).
+2. **Sparse Branch Misprediction**: Naive implementations attempting to optimize sparse ternary weights {-1, 0, 1} use scalar conditional logic (`if (weight == 0)`). This destroys CPU branch predictor pipelines, causing instruction flushes that negate any theoretical compute savings.
+3. **CUDA Thread Divergence**: Unaligned global memory fetches for packed sub-byte weights cause extreme warp divergence and non-coalesced memory transactions, crippling SM (Streaming Multiprocessor) occupancy.
 
-### CUDA Warp-Tiling Kernel
-The GPU implementation implements a 2D shared-memory tiling methodology. The kernel utilizes asynchronous memory operations (`cp.async.cg.shared.global`) to pipeline 1.58-bit packed weights and FP32 activations directly into SMEM, circumventing L1 cache operations to mitigate cache pollution. To prevent bank conflicts during intra-warp computations, the shared memory indices are permuted using an XOR swizzle (`i(i ⊕ j)`). The inner product is then processed by 32 parallel threads, finalized through a logarithmic warp-level reduction using `__shfl_down_sync`.
+## 2. Architectural Methodology
+Our approach synthesizes techniques from 5 foundational whitepapers on 1-bit transformers and hardware scaling (BitNet, T-MAC, QuIP#, MARLIN).
 
-## Benchmark Summary
-Microbenchmarks targeting a 4096x4096x4096 matrix operation demonstrate significant latency reductions when comparing the unoptimized scalar kernel to the AVX2 SIMD-native kernel.
-- **Naive Scalar Implementation:** 18,500 ms 
-- **AVX2 SIMD-Native Implementation:** 230 ms
-The measured 80.4x speedup indicates optimal utilization of SIMD instruction pipelines and successful mitigation of branch misprediction overheads.
+### 2.1 SIMD In-Register Accumulation (CPU)
+Derived from the BitNet scaling architecture, the core requirement is to avoid casting activations to floats. The C++ kernel executes:
+- **Bitwise Weight Extraction**: Uses the `_mm256_srlv_epi32` AVX2 intrinsic to shift and isolate packed 2-bit weights directly within the 256-bit register. 
+- **Branchless Compute**: Uses a shift-and-arithmetic-right-shift (`_mm256_srai_epi32`) to map binary weights {00, 01, 11} to sign controls {0, 1, -1}. The `_mm256_sign_epi32` instruction applies these to the activation vector. This completely eliminates branch misprediction.
+- **Loop Tiling**: We process the matrix loops in `M -> K -> N` order (tiled by 8 along N), ensuring that the accumulator vectors remain in the L0 registers across the entire `K` dimension.
+
+### 2.2 Offline Weight Interleaving (T-MAC)
+Ternary weights are structured offline in a transposed `K x (N/4)` layout. This layout allows the AVX2 kernel to load 16-bit packed weights without strided DRAM access. A single contiguous read fetches 8 elements across the output channels, perfectly feeding the 8 lanes of the AVX2 vector space.
+
+### 2.3 Asynchronous Warp Tiling (MARLIN)
+To mitigate the global memory latency bottleneck on the GPU, the CUDA kernel utilizes `cp.async` to bypass the L1 cache, streaming activations and weights directly into `__shared__` memory.
+- **XOR Memory Swizzling**: Prevents shared memory bank conflicts by mapping thread indices via `ty ^ tx`.
+- **Warp-Level Reduction**: Avoids thread-per-element scaling. Instead, the warp collaborates to compute 32 values along the `K` dimension, followed by a logarithmic parallel reduction using `__shfl_down_sync`.
+
+## 3. Conceptual Overview
+For non-specialists: Deep learning models are essentially massive grids of numbers (weights) that are multiplied together. Normally, these numbers use high precision (decimals). TernixEngine forces these numbers to be extremely simple integers: -1, 0, or 1. Because the numbers are so simple, the processor no longer needs to perform complex multiplication. It only needs to perform addition, subtraction, or do nothing. We engineered custom instructions that allow the processor to pack 4 of these simple numbers into a single byte of memory, read them instantly, and process 8 of them at the exact same time without the processor having to stop and "think" about whether the number is zero.
+
+## 4. System Architecture
+
+```mermaid
+graph TD
+    A[PyBind11 Interface] --> B[Model Loader & Memory Aligner]
+    B --> C{Execution Backend}
+    C -->|CPU| D[AVX2 In-Register Compute]
+    C -->|GPU| E[CUDA Warp Reduction]
+    D --> F[L0/L1 Cache]
+    E --> G[Shared Memory Tiles]
+    F --> H(Output INT32 Tensor)
+    G --> H
+```
+The system initializes via a Python wrapper or C++ CLI. The `Model` struct parses interleaved weights from disk, aligning them in 32-byte chunks using `_mm_malloc` for SIMD compatibility. The kernel execution branches to either the highly optimized CPU AVX2 loop or the asynchronous CUDA kernel based on runtime topology.
+
+## 5. Directory Structure
+```text
+TernixEngine/
+├── CMakeLists.txt                 # Master build configuration
+├── benchmarks/                    # Google Benchmark suite (exports to CSV)
+├── bindings/python/               # Pybind11 wrapper and setup
+├── include/ternix/                # Core C++/CUDA headers
+├── scripts/                       # Quantization and plotting scripts
+├── src/                           # Backend kernel implementations
+└── tests/                         # GoogleTest unit coverage
+```
+
+## 6. Technology Stack
+- **C++20**: Strict compliance for advanced memory semantics.
+- **CUDA 12.x**: For NVIDIA Ampere+ architectures.
+- **Intrinsics**: Intel AVX2 (`<immintrin.h>`).
+- **Dependencies (Git Submodules)**: Google Benchmark, GoogleTest, Pybind11.
+- **Build System**: CMake, Ninja.
+
+## 7. DevOps & Testing
+Unit tests are implemented using GoogleTest, located in the `tests/` directory. They specifically validate:
+- Lossless 2-bit packing and unpacking mechanisms.
+- Mathematical accuracy of AVX2 auxiliary layers (RMSNorm, SwiGLU) compared to floating-point standards.
+Execute tests via `ctest --output-on-failure` within the build directory.
+
+## 8. Environment Setup & Execution
+The build pipeline requires MSVC Build Tools on Windows (for native CUDA integration).
+
+1. Install Python prerequisites: `pip install cmake ninja pandas matplotlib`.
+2. Configure the build matrix and execute the pipeline:
+   ```powershell
+   .\run_all.ps1
+   ```
+This script automates CMake generation, compilation, unit testing, microbenchmarking, and graph visualization. Please refer to `.antigravity/tech.md` for private host setup guidelines.
+
+## 9. Empirical Benchmarks & Evaluation
+Benchmarks are tracked using the Google Benchmark framework, which outputs statistical traces directly to `benchmarks/results.csv`. The `scripts/plot_results.py` script visualizes this data programmatically.
+
+| Implementation Strategy | Loop Constraints | Instruction Set | Throughput Speedup (Theoretical) |
+| :--- | :--- | :--- | :--- |
+| Naive Scalar | Branching `if (w == 0)` | Base C++ | 1.0x (Baseline) |
+| Tiled SIMD Accumulation | Tiled `M -> K -> N` | AVX2 (`_mm256_srlv_epi32`) | ~80.0x |
+| Asynchronous CUDA Warp | `32x32` Shared Mem | NVCC (`__shfl_down_sync`) | ~350.0x |
+
+## 10. Limitations & Future Work
+Based on our analysis of the codebase and literature:
+1. **Lookup Table (LUT) Integration**: While QuIP# and T-MAC recommend E8-lattice codebooks for cache-resident LUT operations, our current iteration hardcodes the ternary arithmetic. Future work requires generating a 1KiB LUT to process groups of weights natively.
+2. **AVX-512 VNNI**: The current architecture uses AVX2 for maximum hardware compatibility. Implementing `_mm512_dpbusd_epi32` (AVX-512) will theoretically double throughput on Sapphire Rapids and Zen 4 architectures.
+3. **End-to-End Latency Tracing**: The `bench_end_to_end.cpp` file is currently a structural stub. It must be expanded to track actual token-generation latency (Tokens/sec) rather than isolated matrix multiplications.
+
+## 11. Troubleshooting
+- **CMake cannot find compiler**: Ensure you are running from the *x64 Native Tools Command Prompt for VS 2022*, not standard PowerShell.
+- **C2719 Error (MSVC)**: Ensure all `__m256i` arguments are passed by reference or pointer, as MSVC prohibits passing aligned types by value in older configurations.
+- **CUDA PTX Errors**: Verify that your NVIDIA Studio Driver matches the CUDA Toolkit version. Game Ready drivers may cause unexpected PTX instruction failures during `cp.async`.
