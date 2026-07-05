@@ -22,4 +22,16 @@ void mul_mat_ternary_naive(
     size_t M, size_t K, size_t N
 );
 
+/**
+ * @brief AVX2 SIMD-native implementation of ternary matrix multiplication
+ * 
+ * Bypasses floating point math. Uses in-register unpacking and accumulation.
+ */
+void mul_mat_ternary_avx2(
+    const int8_t* __restrict A,
+    const uint8_t* __restrict B_packed,
+    int32_t* __restrict C,
+    size_t M, size_t K, size_t N
+);
+
 } // namespace ternix
