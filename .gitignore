@@ -19,12 +19,7 @@ Makefile
 __pycache__/
 *.pyc
 
-# Private Local AI Workspaces / Documentation
-.antigravity/
-architecture.md
-tech.md
-MEMORY.md
-INSTRUCTIONS.md
+
 
 # Dynamic Benchmark Data
 benchmarks/*.json

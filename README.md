@@ -49,7 +49,7 @@ To mitigate the global memory latency bottleneck on the GPU, the CUDA kernel uti
 - **Warp-Level Reduction**: Avoids thread-per-element scaling. Instead, the warp collaborates to compute 32 values along the `K` dimension, followed by a logarithmic parallel reduction using `__shfl_down_sync`.
 
 ## 3. Conceptual Overview
-For non-specialists: Deep learning models are essentially massive grids of numbers (weights) that are multiplied together. Normally, these numbers use high precision (decimals). TernixEngine forces these numbers to be extremely simple integers: -1, 0, or 1. Because the numbers are so simple, the processor no longer needs to perform complex multiplication. It only needs to perform addition, subtraction, or do nothing. We engineered custom instructions that allow the processor to pack 4 of these simple numbers into a single byte of memory, read them instantly, and process 8 of them at the exact same time without the processor having to stop and "think" about whether the number is zero.
+The core idea is to reduce standard high-precision weights down to simple integers (-1, 0, 1). This allows us to replace computationally expensive floating-point multiplication with basic integer addition and subtraction. By packing four of these 2-bit values into a single byte, we can use AVX2 vector instructions to process them concurrently without conditional branching.
 
 ## 4. System Architecture
 
@@ -160,13 +160,13 @@ Based on our empirical microbenchmarking on a 512x512 matrix execution:
 The data confirms that the structural alignment of the SIMD integer accumulations with proper weight interleaving yields over an order of magnitude improvement by eliminating the scalar control-flow hazard entirely.
 
 ## 10. Current Project Status
-As of the current milestone, the project is **not yet a fully functional end-to-end inference engine**. Instead, it is a highly optimized, verified mathematical kernel library with scaffolding for an engine.
+The project is currently a mathematical kernel library with scaffolding. It is not yet a functional end-to-end inference engine.
 
 ### Accomplishments:
-- **Core Math Kernel**: We have successfully written, benchmarked, and verified the 1.58-bit ternary matrix multiplication kernel (`src/mul_mat_ternary.cpp`). It flawlessly uses AVX2 intrinsics (`_mm256_srlv_epi32`, `_mm256_sign_epi32`) to achieve branchless, float-less accumulation.
-- **Microbenchmarking**: The pipeline is highly robust, utilizing Google Benchmark to dynamically measure latency and graph the speedups (currently achieving an ~8.2x speedup over scalar branching).
+- **Core Math Kernel**: The 1.58-bit ternary matrix multiplication kernel (`src/mul_mat_ternary.cpp`) is implemented and verified. It uses AVX2 intrinsics (`_mm256_srlv_epi32`, `_mm256_sign_epi32`) for branchless, integer-only accumulation.
+- **Microbenchmarking**: Google Benchmark is integrated to measure latency, currently showing an ~8.2x speedup over the scalar branching baseline.
 - **Python Interoperability**: PyBind11 is configured and successfully compiles `ternix_engine.pyd` for python integrations.
-- **Repository Structure**: The CMake matrix, testing suite (GTest), GitHub Actions (stub), and documentation are completely production-ready.
+- **Repository Structure**: The CMake configuration, GTest suite, and initial documentation are set up.
 
 ### What is Missing / Incomplete:
 - **Weight Quantization (`quantize.py`)**: This is completely empty (a structural stub). It does not load HuggingFace models, does not apply BitNet scaling, and does not pack into our 2-bit interleaved layout yet.
